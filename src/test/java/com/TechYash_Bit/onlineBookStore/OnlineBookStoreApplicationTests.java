@@ -1,13 +1,20 @@
 package com.TechYash_Bit.onlineBookStore;
 
+import com.TechYash_Bit.onlineBookStore.Repositories.BookRepo;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @SpringBootTest
 class OnlineBookStoreApplicationTests {
 
+	@Autowired
+	private BookRepo bookRepo;
 	@Test
 	void contextLoads() {
 	}
+
 
 }

@@ -5,23 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class BookDto {
-    private int id;
-
-
-    private String title;
-
-
-    private String author;
-
-    private String category;
-
-
-    private double price;
-
-    private int stock;
+public class RequestUserDto {
+    private String name;
+    private String email;
 }

@@ -1,4 +1,4 @@
-package com.TechYash_Bit.onlineBookStore;
+package com.TechYash_Bit.onlineBookStore.configuration;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
