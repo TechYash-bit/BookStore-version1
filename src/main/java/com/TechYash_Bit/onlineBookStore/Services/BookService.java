@@ -4,7 +4,8 @@ import com.TechYash_Bit.onlineBookStore.Dto.RequestBookDto;
 import com.TechYash_Bit.onlineBookStore.Dto.ResponseBookDto;
 import com.TechYash_Bit.onlineBookStore.Entities.BookEntity;
 import com.TechYash_Bit.onlineBookStore.Repositories.BookRepo;
-import com.TechYash_Bit.onlineBookStore.exception.ResourseNotFoundException;
+import com.TechYash_Bit.onlineBookStore.exception.BookNotFoundException;
+import com.TechYash_Bit.onlineBookStore.exception.UserNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
@@ -47,7 +48,7 @@ public class BookService {
 
     public ResponseBookDto updateBook(Long id, RequestBookDto bkdto) {
         BookEntity bkentity=bookRepo.findById(id)
-                .orElseThrow(()->new ResourseNotFoundException("book not present with id "+id));
+                .orElseThrow(()->new BookNotFoundException("book not present with id "+id));
         bkentity.setTitle(bkdto.getTitle());
         bkentity.setCategory(bkdto.getCategory());
         bkentity.setAuthor(bkdto.getAuthor());
@@ -64,7 +65,7 @@ public class BookService {
 
     public ResponseBookDto partialUpdate(Long id, Map<String, Object> updates) {
         BookEntity bkentity = bookRepo.findById(id)
-                .orElseThrow(() -> new ResourseNotFoundException("Book not found with id " + id));
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id " + id));
         updates.forEach((key,value)->{
             Field field= ReflectionUtils.findField(BookEntity.class,key);
             if (field!=null){

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,8 @@ public class OrderEntity {
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     private UserEntity user;
+
+    @CreationTimestamp
     private LocalDateTime orderDate;
 
     private double amount;

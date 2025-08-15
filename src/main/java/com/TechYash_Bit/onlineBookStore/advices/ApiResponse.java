@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 public class ApiResponse <T>{
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss dd-MM-yyyy")
     private LocalDateTime localDateTime;
-
     private T data;
     private ApiError error;
 

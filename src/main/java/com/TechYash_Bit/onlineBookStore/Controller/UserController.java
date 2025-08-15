@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/user")
@@ -35,6 +36,12 @@ public class UserController {
     @PutMapping(path = "/{id}")
     public ResponseEntity<ResponseUserDto> updateUser(@PathVariable long id, @Valid @RequestBody RequestUserDto user){
         return ResponseEntity.ok(userService.updateUser(id,user));
+    }
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<ResponseUserDto> updateInfo(@PathVariable long id, @Valid @RequestBody Map<String,Object> user){
+        ResponseUserDto userDto=userService.updateInfo(id,user);
+        if(userDto==null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(userDto);
     }
 
 

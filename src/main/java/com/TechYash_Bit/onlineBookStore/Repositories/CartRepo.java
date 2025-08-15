@@ -5,10 +5,13 @@ import com.TechYash_Bit.onlineBookStore.Entities.CartEntity;
 import com.TechYash_Bit.onlineBookStore.Entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CartRepo extends JpaRepository<CartEntity,Long> {
-    Optional<CartEntity> findByUserAndBook(UserEntity user, BookEntity book);
+
+    List<CartEntity> findByUserId(Long id);
+    Optional<CartEntity> findByUserIdAndBookId(Long userId, Long bookId);
 
 
 }

@@ -4,7 +4,7 @@ package com.TechYash_Bit.onlineBookStore.Controller;
 import com.TechYash_Bit.onlineBookStore.Dto.RequestBookDto;
 import com.TechYash_Bit.onlineBookStore.Dto.ResponseBookDto;
 import com.TechYash_Bit.onlineBookStore.Services.BookService;
-import com.TechYash_Bit.onlineBookStore.exception.ResourseNotFoundException;
+import com.TechYash_Bit.onlineBookStore.exception.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,7 @@ public class BookController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<ResponseBookDto> findBookById(@PathVariable Long id){
         Optional<ResponseBookDto> bookDto= bookService.findBookById(id);
-        return bookDto.map(ResponseEntity::ok).orElseThrow(()-> new ResourseNotFoundException("book not found "+id));
+        return bookDto.map(ResponseEntity::ok).orElseThrow(()-> new UserNotFoundException("book not found "+id));
         //return ResponseEntity.ok(bookService.findBookById(id)).build();
     }
 

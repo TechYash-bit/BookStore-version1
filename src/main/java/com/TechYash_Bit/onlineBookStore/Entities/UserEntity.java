@@ -31,8 +31,8 @@ public class UserEntity {
     @UpdateTimestamp
     private LocalDateTime updateAt;
 
-    @JsonProperty("isAdmin")
-    private boolean isAdmin; // CUSTOMER, ADMIN
+//    @JsonProperty("isAdmin")
+//    private boolean isAdmin; // CUSTOMER, ADMIN
 
     @OneToMany(mappedBy = "user" ,cascade = CascadeType.ALL)
     private List<OrderEntity> allOrder;

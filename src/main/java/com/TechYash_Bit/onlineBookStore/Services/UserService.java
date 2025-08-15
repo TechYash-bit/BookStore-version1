@@ -4,13 +4,17 @@ import com.TechYash_Bit.onlineBookStore.Dto.RequestUserDto;
 import com.TechYash_Bit.onlineBookStore.Dto.ResponseUserDto;
 import com.TechYash_Bit.onlineBookStore.Entities.UserEntity;
 import com.TechYash_Bit.onlineBookStore.Repositories.UserRepo;
+import com.TechYash_Bit.onlineBookStore.exception.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +35,7 @@ public class UserService {
     }
 
     public ResponseUserDto getUserById(Long id) {
-        UserEntity user=userRepo.findById(id).orElseThrow(()->new RuntimeException("User with userid: "+id+" not present"));
+        UserEntity user=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User with userid: "+id+" not present"));
         return modelMapper.map(user,ResponseUserDto.class);
     }
 
@@ -44,7 +48,7 @@ public class UserService {
     }
 
     public ResponseUserDto updateUser(long id, @Valid RequestUserDto user) {
-      UserEntity existingUser=userRepo.findById(id).orElseThrow(()->new RuntimeException("user not present with this id : "+id));
+      UserEntity existingUser=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("user not present with this id : "+id));
       UserEntity userWithSameEmail=userRepo.findByEmail(user.getEmail()).orElse(null);
         if (userWithSameEmail != null && !userWithSameEmail.getId().equals(id)) {
             throw new RuntimeException("Email already in use by another user");
@@ -52,5 +56,18 @@ public class UserService {
         existingUser.setEmail(user.getEmail());
         existingUser.setName(user.getName());
         return modelMapper.map(userRepo.save(existingUser),ResponseUserDto.class);
+    }
+
+    public ResponseUserDto updateInfo(long id, @Valid Map<String, Object> user) {
+        UserEntity userEntity=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User not present with : "+id));
+
+        user.forEach((key,value)->{
+            Field field= ReflectionUtils.findField(UserEntity.class,key);
+            if(field!=null) {
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, userEntity, value);
+            }
+        });
+        return modelMapper.map(userRepo.save(userEntity),ResponseUserDto.class);
     }
 }

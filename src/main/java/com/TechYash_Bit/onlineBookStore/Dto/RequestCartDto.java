@@ -16,6 +16,6 @@ public class RequestCartDto {
     private Long userId;
     @NotNull(message = "Bookid must required")
     private Long bookId;
-    @Positive
+    @Positive(message = "Quantity must be positive ")
     private int quantity;
 }
