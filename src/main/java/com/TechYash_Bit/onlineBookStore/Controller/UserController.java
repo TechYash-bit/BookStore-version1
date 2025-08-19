@@ -39,9 +39,7 @@ public class UserController {
     }
     @PatchMapping(path = "/{id}")
     public ResponseEntity<ResponseUserDto> updateInfo(@PathVariable long id, @Valid @RequestBody Map<String,Object> user){
-        ResponseUserDto userDto=userService.updateInfo(id,user);
-        if(userDto==null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(userDto);
+        return ResponseEntity.ok(userService.updateInfo(id,user));
     }
 
 

@@ -4,6 +4,7 @@ package com.TechYash_Bit.onlineBookStore.Controller;
 import com.TechYash_Bit.onlineBookStore.Dto.RequestBookDto;
 import com.TechYash_Bit.onlineBookStore.Dto.ResponseBookDto;
 import com.TechYash_Bit.onlineBookStore.Services.BookService;
+import com.TechYash_Bit.onlineBookStore.exception.BookNotFoundException;
 import com.TechYash_Bit.onlineBookStore.exception.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.getAllBook());
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseEntity<ResponseBookDto> addBook(@Valid @RequestBody RequestBookDto bookDto){
         ResponseBookDto bookDto1=bookService.AddBook(bookDto);
@@ -36,8 +38,8 @@ public class BookController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<ResponseBookDto> findBookById(@PathVariable Long id){
         Optional<ResponseBookDto> bookDto= bookService.findBookById(id);
-        return bookDto.map(ResponseEntity::ok).orElseThrow(()-> new UserNotFoundException("book not found "+id));
-        //return ResponseEntity.ok(bookService.findBookById(id)).build();
+        return bookDto.map(ResponseEntity::ok).orElseThrow(()-> new BookNotFoundException("book not found "+id));
+
     }
 
     @PutMapping(path = "/{id}")
@@ -48,8 +50,6 @@ public class BookController {
 
     @PatchMapping(path = "/{id}")
     public ResponseEntity<ResponseBookDto> partialUpdate(@PathVariable Long id, @Valid @RequestBody Map<String,Object> updates){
-        ResponseBookDto bookDto=bookService.partialUpdate(id,updates);
-        if (bookDto==null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(bookDto);
+        return ResponseEntity.ok(bookService.partialUpdate(id,updates));
     }
 }

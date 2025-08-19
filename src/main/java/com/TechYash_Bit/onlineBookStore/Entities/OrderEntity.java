@@ -22,18 +22,15 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "order")
-    private List<CartEntity> carts;
-
     @ManyToOne
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private UserEntity user;
 
-    @CreationTimestamp
-    private LocalDateTime orderDate;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItemEntity> items;
 
-    private double amount;
-
-    private  String status;
+    private double totalPrice;
+    private String status; // PLACED, SHIPPED, DELIVERED, CANCELLED
+    private String paymentStatus;
 
 }

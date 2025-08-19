@@ -6,7 +6,9 @@ import com.TechYash_Bit.onlineBookStore.Entities.BookEntity;
 import com.TechYash_Bit.onlineBookStore.Repositories.BookRepo;
 import com.TechYash_Bit.onlineBookStore.exception.BookNotFoundException;
 import com.TechYash_Bit.onlineBookStore.exception.UserNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -17,15 +19,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BookService {
-
     final private BookRepo bookRepo;
+    @Autowired
     private ModelMapper modelMapper;
 
-    BookService(BookRepo bookRepo,ModelMapper modelMapper){
-        this.bookRepo=bookRepo;
-        this.modelMapper=modelMapper;
-    }
+
 
     public List<ResponseBookDto> getAllBook(){
         List<BookEntity> list=bookRepo.findAll();
@@ -47,18 +47,13 @@ public class BookService {
     }
 
     public ResponseBookDto updateBook(Long id, RequestBookDto bkdto) {
-        BookEntity bkentity=bookRepo.findById(id)
-                .orElseThrow(()->new BookNotFoundException("book not present with id "+id));
-        bkentity.setTitle(bkdto.getTitle());
-        bkentity.setCategory(bkdto.getCategory());
-        bkentity.setAuthor(bkdto.getAuthor());
-        bkentity.setStock(bkdto.getStock());
-        bkentity.setPrice(bkdto.getPrice());
-        bookRepo.save(bkentity);
+        BookEntity existing = bookRepo.findById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book not present with id " + id));
 
-        return modelMapper.map(bkentity, ResponseBookDto.class);
-
+        modelMapper.map(bkdto, existing); // Automatically maps all updatable fields
+        return modelMapper.map(bookRepo.save(existing), ResponseBookDto.class);
     }
+
     public boolean isBookExist(Long id){
         return bookRepo.existsById(id);
     }
@@ -66,11 +61,11 @@ public class BookService {
     public ResponseBookDto partialUpdate(Long id, Map<String, Object> updates) {
         BookEntity bkentity = bookRepo.findById(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with id " + id));
-        updates.forEach((key,value)->{
-            Field field= ReflectionUtils.findField(BookEntity.class,key);
-            if (field!=null){
+        updates.forEach((key, value) -> {
+            Field field = ReflectionUtils.findField(BookEntity.class, key);
+            if (field != null && !"id".equalsIgnoreCase(key)) { // Prevent ID change
                 field.setAccessible(true);
-                ReflectionUtils.setField(field,bkentity,value);
+                ReflectionUtils.setField(field, bkentity, value);
             }
         });
         return modelMapper.map(bookRepo.save(bkentity), ResponseBookDto.class);

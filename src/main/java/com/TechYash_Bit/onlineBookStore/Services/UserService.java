@@ -47,27 +47,44 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public ResponseUserDto updateUser(long id, @Valid RequestUserDto user) {
-      UserEntity existingUser=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("user not present with this id : "+id));
-      UserEntity userWithSameEmail=userRepo.findByEmail(user.getEmail()).orElse(null);
+    public ResponseUserDto updateUser(long id, @Valid RequestUserDto userDto) {
+        UserEntity existingUser = userRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not present with this id : " + id));
+
+        // Check for email uniqueness
+        UserEntity userWithSameEmail = userRepo.findByEmail(userDto.getEmail()).orElse(null);
         if (userWithSameEmail != null && !userWithSameEmail.getId().equals(id)) {
             throw new RuntimeException("Email already in use by another user");
         }
-        existingUser.setEmail(user.getEmail());
-        existingUser.setName(user.getName());
-        return modelMapper.map(userRepo.save(existingUser),ResponseUserDto.class);
+
+        existingUser.setName(userDto.getName());
+        existingUser.setEmail(userDto.getEmail());
+        existingUser.setPassword(userDto.getPassword());
+        existingUser.setPhone(userDto.getPhone());
+        existingUser.setAddress(userDto.getAddress());
+
+        return modelMapper.map(userRepo.save(existingUser), ResponseUserDto.class);
     }
 
-    public ResponseUserDto updateInfo(long id, @Valid Map<String, Object> user) {
-        UserEntity userEntity=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User not present with : "+id));
+    public ResponseUserDto updateInfo(long id, Map<String, Object> updates) {
+        UserEntity userEntity = userRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not present with : " + id));
 
-        user.forEach((key,value)->{
-            Field field= ReflectionUtils.findField(UserEntity.class,key);
-            if(field!=null) {
+        updates.forEach((key, value) -> {
+            if (key.equalsIgnoreCase("email")) {
+                UserEntity userWithSameEmail = userRepo.findByEmail(value.toString()).orElse(null);
+                if (userWithSameEmail != null && !userWithSameEmail.getId().equals(id)) {
+                    throw new RuntimeException("Email already in use by another user");
+                }
+            }
+
+            Field field = ReflectionUtils.findField(UserEntity.class, key);
+            if (field != null) {
                 field.setAccessible(true);
                 ReflectionUtils.setField(field, userEntity, value);
             }
         });
-        return modelMapper.map(userRepo.save(userEntity),ResponseUserDto.class);
+
+        return modelMapper.map(userRepo.save(userEntity), ResponseUserDto.class);
     }
 }

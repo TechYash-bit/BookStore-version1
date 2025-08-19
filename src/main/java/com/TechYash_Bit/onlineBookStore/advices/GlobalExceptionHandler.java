@@ -1,9 +1,6 @@
 package com.TechYash_Bit.onlineBookStore.advices;
 
-import com.TechYash_Bit.onlineBookStore.exception.BookNotFoundException;
-import com.TechYash_Bit.onlineBookStore.exception.CartNotFoundException;
-import com.TechYash_Bit.onlineBookStore.exception.OrderNotFoundException;
-import com.TechYash_Bit.onlineBookStore.exception.UserNotFoundException;
+import com.TechYash_Bit.onlineBookStore.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,6 +29,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleCarNotFound(CartNotFoundException cart){
         ApiError apiError=ApiError.builder().status(HttpStatus.NOT_FOUND).message(cart.getMessage()).build();
         return buildErrorResponseEntity(apiError);
+    }
+    @ExceptionHandler(UserNameAndPasswordNotFound.class)
+    public ResponseEntity<ApiResponse<?>> handleUserNameAndPassword(UserNameAndPasswordNotFound userNameAndPasswordNotFound){
+        ApiError api=ApiError.builder().message(userNameAndPasswordNotFound.getMessage()).status(HttpStatus.NOT_FOUND).build();
+        return buildErrorResponseEntity(api);
+    }
+    @ExceptionHandler(EmailPresentException.class)
+    public ResponseEntity<ApiResponse<?>> handleEmailPresentException(EmailPresentException email){
+        ApiError api=ApiError.builder().status(HttpStatus.NOT_FOUND).message(email.getMessage()).build();
+        return buildErrorResponseEntity(api);
     }
 
     @ExceptionHandler(Exception.class)

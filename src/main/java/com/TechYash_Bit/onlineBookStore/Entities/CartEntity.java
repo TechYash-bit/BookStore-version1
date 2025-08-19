@@ -28,10 +28,12 @@ public class CartEntity {
     @JoinColumn(name = "bookId",nullable = false)
     private BookEntity book;
 
-    private int quantity;
-    private double price;
+    @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<CartItemEntity> cartItem;
 
     @ManyToOne()
     @JoinColumn(name = "orderId",nullable = true)
     private OrderEntity order;
+
+    private double totalprice;
 }

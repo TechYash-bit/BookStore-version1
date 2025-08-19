@@ -8,8 +8,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Setter
@@ -18,24 +21,54 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String userName;
+
+    @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false, unique = true, length = 15)
+    private String phone;
+
+    @Column(length = 255)
+    private String address;
+
+    private String role; // CUSTOMER / ADMIN
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CartEntity> carts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderEntity> orders;
+
     @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
-    private LocalDateTime updateAt;
-
-//    @JsonProperty("isAdmin")
-//    private boolean isAdmin; // CUSTOMER, ADMIN
-
-    @OneToMany(mappedBy = "user" ,cascade = CascadeType.ALL)
-    private List<OrderEntity> allOrder;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return userName;
+    }
 }
