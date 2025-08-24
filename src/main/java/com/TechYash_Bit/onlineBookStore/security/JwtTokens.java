@@ -1,6 +1,7 @@
 package com.TechYash_Bit.onlineBookStore.security;
 
 import com.TechYash_Bit.onlineBookStore.Entities.UserEntity;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
-public class jwtTokens {
+public class JwtTokens {
     @Value("${jwt.secrateKey}")
     String secrateKey;
     private SecretKey getSecrateKey(){
@@ -26,5 +27,10 @@ public class jwtTokens {
                 .expiration(new Date(System.currentTimeMillis()+1000*60*10))
                 .signWith(getSecrateKey())
                 .compact();
+    }
+
+    public String getUserNameFromeToken(String token) {
+        Claims claims=Jwts.parser().verifyWith(getSecrateKey()).build().parseSignedClaims(token).getPayload();
+        return claims.getSubject();
     }
 }

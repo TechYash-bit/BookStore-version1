@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final jwtTokens authUtil;
+    private final JwtTokens authUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
