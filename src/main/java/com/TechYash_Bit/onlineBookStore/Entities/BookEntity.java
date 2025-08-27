@@ -31,7 +31,7 @@ public class BookEntity {
     private String isbn;
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private double price;
 
     @Column(nullable = false)
     private int stock;

@@ -21,6 +21,6 @@ public class ResponseUserDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private List<ResponseCartDto> carts;
+    private List<ResponseCartItemDto> carts;
     private List<ResponseOrderDto> orders;
 }

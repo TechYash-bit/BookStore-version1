@@ -29,8 +29,8 @@ public class WebSecurityConfig {
                 .sessionManagement(SessionConfigurer -> SessionConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))// 🔑 disable CSRF for APIs
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // ✅ allow signup/login
-//                        .requestMatchers("/books/**").permitAll()
-                        .anyRequest().authenticated()// optional
+                        .requestMatchers("/books/**").permitAll()
+                        .anyRequest().permitAll()// optional
 
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -20,7 +20,7 @@ public class ApiResponse <T>{
         this();
         this.error=error;
     }
-    ApiResponse(T data){
+    public ApiResponse(T data){
         this();
         this.data=data;
     }

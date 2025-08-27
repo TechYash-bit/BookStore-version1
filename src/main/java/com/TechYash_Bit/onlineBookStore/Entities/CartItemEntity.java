@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Setter
 @Getter
@@ -21,10 +23,12 @@ public class CartItemEntity {
     @JoinColumn(name = "cartId",nullable = false)
     private CartEntity cart;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bookId",nullable = false)
-    private  BookEntity boook;
+    private  BookEntity book;
 
     private int Quantity;
     private double price;
+
+
 }

@@ -1,19 +1,18 @@
 package com.TechYash_Bit.onlineBookStore.Dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.util.List;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class ResponseCartDto {
 
-    private Long id;
-    private int userId;
-    private int bookId;
-    private int quantity;
-    private double price;
+    private Long cartId;
+    private List<ResponseCartItemDto> item;
+    private double totalPrice;
+
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -24,16 +25,10 @@ public class CartEntity {
     @JoinColumn(name = "userId",nullable = false)
     private UserEntity user;
 
-    @ManyToOne
-    @JoinColumn(name = "bookId",nullable = false)
-    private BookEntity book;
 
-    @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,orphanRemoval = true ,fetch = FetchType.EAGER)
     private List<CartItemEntity> cartItem;
 
-    @ManyToOne()
-    @JoinColumn(name = "orderId",nullable = true)
-    private OrderEntity order;
 
     private double totalprice;
 }
