@@ -6,7 +6,6 @@ import com.TechYash_Bit.onlineBookStore.Entities.UserEntity;
 import com.TechYash_Bit.onlineBookStore.Repositories.UserRepo;
 import com.TechYash_Bit.onlineBookStore.exception.UserNotFoundException;
 import jakarta.validation.Valid;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -86,5 +85,26 @@ public class UserService {
         });
 
         return modelMapper.map(userRepo.save(userEntity), ResponseUserDto.class);
+    }
+
+    public UserEntity getUserByUserName(String username) {
+        UserEntity user=userRepo.findByUserName(username).orElseThrow(()->new UserNotFoundException("user not found with user name "+username));
+    return  user;
+    }
+
+//    public UserEntity getUserByEmail(String email) {
+//        UserEntity user=userRepo.findByEmail(email).orElse(null);
+//        return modelMapper.map(user,UserEntity.class);
+//    }
+
+    public UserEntity getUserByEmail(String email) {
+        UserEntity user = userRepo.findByEmail(email).orElse(null);
+        if (user == null) {
+            return null; // or throw exception
+        }
+        return user;
+    }
+    public UserEntity save(UserEntity userEntity) {
+        return userRepo.save(userEntity);
     }
 }

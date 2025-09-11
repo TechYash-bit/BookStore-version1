@@ -6,6 +6,7 @@ import com.TechYash_Bit.onlineBookStore.Dto.RequestUserDto;
 import com.TechYash_Bit.onlineBookStore.Dto.SignUpResponseDto;
 import com.TechYash_Bit.onlineBookStore.Entities.UserEntity;
 import com.TechYash_Bit.onlineBookStore.Repositories.UserRepo;
+import com.TechYash_Bit.onlineBookStore.Services.UserService;
 import com.TechYash_Bit.onlineBookStore.exception.EmailPresentException;
 import com.TechYash_Bit.onlineBookStore.exception.UserNameAndPasswordNotFound;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +25,22 @@ public class AuthService {
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final UserService user;
+    private final SessionService sessionService;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Authentication authentication=authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequestDto.getUserName(),loginRequestDto.getPassword())
         );
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new UserNameAndPasswordNotFound("Invalid username or password");
+            throw new ArithmeticException("Invalid username or password");
         }
         UserEntity user=(UserEntity) authentication.getPrincipal();
-        String token=authUtil.genrateJwtToken(user);
-        return  new LoginResponseDto(token,user.getUsername());
+        String accesstoken=authUtil.genrateAccessToken(user);
+        String refreshtoken =authUtil.genrateRefreshToken(user);
+        sessionService.genrateNewSession(user,refreshtoken);
+
+        return  new LoginResponseDto(accesstoken,refreshtoken,user.getUsername());
     }
 
     public SignUpResponseDto signup(RequestUserDto signup) {
@@ -49,5 +55,14 @@ public class AuthService {
 
          return modelMapper.map(userRepo.save(user), SignUpResponseDto.class);
 
+    }
+
+    public LoginResponseDto refreshtoken(String refereshtoken) {
+        String username= authUtil.getUserNameFromeToken(refereshtoken);
+        sessionService.isvalidate(refereshtoken);
+        UserEntity user1=user.getUserByUserName(username);
+        String accessToken= authUtil.genrateAccessToken(user1);
+
+        return new LoginResponseDto(accessToken,refereshtoken,user1.getUsername());
     }
 }

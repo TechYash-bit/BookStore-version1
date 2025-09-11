@@ -28,7 +28,7 @@ public class OrderEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItemEntity> items;
-
+    private LocalDateTime dateTime;
     private double totalPrice;
     private String status; // PLACED, SHIPPED, DELIVERED, CANCELLED
     private String paymentStatus;

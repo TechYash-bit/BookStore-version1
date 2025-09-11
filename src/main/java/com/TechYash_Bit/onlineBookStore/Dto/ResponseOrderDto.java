@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,8 +14,15 @@ import java.time.LocalDateTime;
 public class ResponseOrderDto {
     private Long  id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss dd-MM-yyyy")
-    private LocalDateTime orderDate;
+    private String orderDate;
     private double totalAmount;
-    private int userId;
-    private int bookId;
+    private Long userId;
+    private String paymentStatus;
+    private String orderStatus;
+    private List<ResponseOrderItemDto> itemDtos;
+
+    public ResponseOrderDto(Long id, String string, double totalPrice, Long id1, String status, List<ResponseOrderItemDto> itemDtos) {
+    }
+
+
 }

@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginResponseDto {
-private String jwtToken;
+private String accessToken;
+private String refreshtoken;
 private String username;
 
 

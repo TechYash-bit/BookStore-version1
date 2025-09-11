@@ -15,16 +15,28 @@ import java.util.Date;
 public class JwtTokens {
     @Value("${jwt.secrateKey}")
     String secrateKey;
+    @Value("${jwt.refresh.expiration}")
+    private long refreshExpirationMs;
+
     private SecretKey getSecrateKey(){
         return Keys.hmacShaKeyFor(secrateKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String genrateJwtToken(UserEntity user){
+    public String genrateAccessToken(UserEntity user){
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim("userId",user.getId().toString())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+1000*60*100))
+                .expiration(new Date(System.currentTimeMillis()+1000*60*10))
+                .signWith(getSecrateKey())
+                .compact();
+    }
+
+    public String genrateRefreshToken(UserEntity user){
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis()+refreshExpirationMs))
                 .signWith(getSecrateKey())
                 .compact();
     }

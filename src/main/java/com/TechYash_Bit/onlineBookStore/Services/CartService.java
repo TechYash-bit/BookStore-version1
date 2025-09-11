@@ -41,10 +41,11 @@ public class CartService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // 2. Find or create cart
-        CartEntity cartExist = cartRepo.findByUserId(userId).orElseGet(() -> {
+        CartEntity cartExist = cartRepo.findByUser_Id(userId).orElseGet(() -> {
             CartEntity newCart = new CartEntity();
             newCart.setUser(user);
-            newCart.setCartItem(new ArrayList<>());
+           newCart.setCartItems(new ArrayList<>());
+
             newCart.setTotalprice(0.0);
             return cartRepo.save(newCart);
         });
@@ -54,7 +55,7 @@ public class CartService {
                 .orElseThrow(() -> new BookNotFoundException("Book not found"));
 
         // 4. Check if book already in cart
-        Optional<CartItemEntity> cartItemOpt = cartExist.getCartItem().stream()
+        Optional<CartItemEntity> cartItemOpt = cartExist.getCartItems().stream()
                 .filter(item -> item.getBook().getId().equals(cart.getBookId()))
                 .findFirst();
 
@@ -71,17 +72,17 @@ public class CartService {
             newItem.setPrice(cart.getQuantity() * book.getPrice());
             newItem.setCart(cartExist);
 
-            cartExist.getCartItem().add(newItem);
+            cartExist.getCartItems().add(newItem);
         }
-        double total=cartExist.getCartItem().stream().mapToDouble(CartItemEntity::getPrice).sum();
+        double total=cartExist.getCartItems().stream().mapToDouble(CartItemEntity::getPrice).sum();
         cartExist.setTotalprice(total);
         // 6. Save updated cart
         cartRepo.save(cartExist);
     }
 
     public ResponseCartDto viewCart(long userId) {
-        CartEntity cart=cartRepo.findByUserId(userId).orElseThrow(()->new CartNotFoundException("cart not foundf with userid : "+userId));
-        List<ResponseCartItemDto> items = cart.getCartItem().stream()
+        CartEntity cart=cartRepo.findByUser_Id(userId).orElseThrow(()->new CartNotFoundException("cart not foundf with userid : "+userId));
+        List<ResponseCartItemDto> items = cart.getCartItems().stream()
                 .map(item -> new ResponseCartItemDto(
                         item.getBook().getId(),
                         item.getBook().getTitle(),
@@ -90,6 +91,47 @@ public class CartService {
                 ))
                 .toList();
         return new ResponseCartDto(cart.getId(),items,cart.getTotalprice());
+    }
+
+    public ResponseCartItemDto getCartItem(Long userId, Long bookId) {
+        CartEntity cart=cartRepo.findByUser_Id(userId).orElseThrow(()->new CartNotFoundException("cart Not found with  userId : "+userId));
+        CartItemEntity cartItemEntity=cartItemRepo.findByCart_IdAndBook_Id(cart.getId(),bookId).orElseThrow(()->new RuntimeException("cart is empty"));
+        ResponseCartItemDto responseCartItemDto= modelMapper.map(cartItemEntity,ResponseCartItemDto.class);
+        responseCartItemDto.setTitle(cartItemEntity.getBook().getTitle());
+        return responseCartItemDto;
+    }
+
+    public boolean deleteCart(Long userId) {
+        boolean exist=cartRepo.existsByUser_Id(userId);
+        if(exist){
+            long delete=cartRepo.deleteByUser_Id(userId);
+            if(delete==1)return true;
+            return  false;
+        }
+        else {
+            throw new CartNotFoundException("Cart not found");
+        }
+    }
+
+    public boolean deleteCartItem(Long userId, Long bookId) {
+        boolean exist=cartRepo.existsByUser_Id(userId);
+        if(exist){
+            CartEntity cart=cartRepo.findByUser_Id(userId).get();
+            int delete=cartItemRepo.deleteByCart_IdAndBook_Id(cart.getId(),bookId);
+            return delete>=1;
+
+        }else{
+            throw new CartNotFoundException("cart Not found ");
+        }
+    }
+
+    public boolean updateCartItem(Long userid, Long bookId, int quantity) {
+        CartEntity cart=cartRepo.findByUser_Id(userid).orElseThrow(()-> new CartNotFoundException("cart Not found"));
+        CartItemEntity item=cartItemRepo.findByCart_IdAndBook_Id(cart.getId(),bookId).orElseThrow();
+        if(item==null) throw  new RuntimeException("cart item not found");
+        item.setQuantity(item.getQuantity()+quantity);
+        cartItemRepo.save(item);
+        return true;
     }
 
 

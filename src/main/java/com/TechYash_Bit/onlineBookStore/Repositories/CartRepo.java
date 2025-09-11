@@ -10,8 +10,20 @@ import java.util.Optional;
 
 public interface CartRepo extends JpaRepository<CartEntity,Long> {
 
-    Optional<CartEntity> findByUserId(Long id);
-//    Optional<CartEntity> findByUserIdAndBookId(Long userId, Long bookId);
+//    Optional<CartEntity> findByUserId(Long id);
+//
+//    boolean existsByUser_Id(Long userId);
+//
+//    long deleteByUser_Id(Long userId);
+//
 
+    // Fetch cart by user ID
+    Optional<CartEntity> findByUser_Id(Long userId);
+
+    // Check if cart exists for user
+    boolean existsByUser_Id(Long userId);
+
+    // Delete cart by user ID
+    int deleteByUser_Id(Long userId);
 
 }

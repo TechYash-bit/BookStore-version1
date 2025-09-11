@@ -1,8 +1,10 @@
 package com.TechYash_Bit.onlineBookStore.advices;
 
 import com.TechYash_Bit.onlineBookStore.exception.*;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -45,6 +47,18 @@ public class GlobalExceptionHandler {
     public  ResponseEntity<ApiResponse<?>> handleInternalServerError(Exception exception){
         ApiError apiError=ApiError.builder().status(HttpStatus.INTERNAL_SERVER_ERROR).message(exception.getMessage()).build();
         return  buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<?>> handleAuthenticationException(AuthenticationException ex){
+        ApiError api=ApiError.builder().status(HttpStatus.UNAUTHORIZED).message(ex.getLocalizedMessage()).build();
+        return buildErrorResponseEntity(api);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiResponse<?>> handleAuthenticationException(JwtException ex){
+        ApiError api=ApiError.builder().status(HttpStatus.UNAUTHORIZED).message(ex.getLocalizedMessage()).build();
+        return buildErrorResponseEntity(api);
     }
     private ResponseEntity<ApiResponse<?>> buildErrorResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(new ApiResponse<>(apiError),apiError.getStatus());
